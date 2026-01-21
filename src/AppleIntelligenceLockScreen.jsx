@@ -1,5 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 
+// ---- SSR safety check ----
+const isBrowser = typeof window !== "undefined" && typeof document !== "undefined";
+
 // ---- Glow Logic (adapted from original demo) ----
 
 const COLORS = ["#BC82F3", "#F5B9EA", "#8D9FFF", "#FF6778", "#FFBA71", "#C686FF"];
@@ -16,6 +19,9 @@ function generateConicGradientString() {
 
 class GlowRing {
   constructor(container, config) {
+    // SSR safety: only run in browser environment
+    if (!isBrowser) return;
+
     this.width = config.width;
     this.blur = config.blur;
     this.interval = config.interval * 1000;
@@ -49,6 +55,7 @@ class GlowRing {
   }
 
   createBuffer() {
+    if (!isBrowser) return null;
     const div = document.createElement("div");
     div.className = "aie-gradient-buffer";
     div.style.padding = `${this.width}px`;
@@ -58,16 +65,20 @@ class GlowRing {
   }
 
   setGradient(element, gradientString) {
-    element.style.backgroundImage = gradientString;
+    if (element) {
+      element.style.backgroundImage = gradientString;
+    }
   }
 
   startTimer() {
-    this.timerId = window.setInterval(() => {
+    if (!isBrowser) return;
+    this.timerId = setInterval(() => {
       this.animate();
     }, this.interval);
   }
 
   animate() {
+    if (!isBrowser) return;
     const newGradient = generateConicGradientString();
 
     if (this.activeBuffer === 1) {
@@ -85,7 +96,7 @@ class GlowRing {
 
   destroy() {
     if (this.timerId) {
-      window.clearInterval(this.timerId);
+      clearInterval(this.timerId);
       this.timerId = null;
     }
   }
@@ -316,19 +327,23 @@ export function AppleIntelligenceLockScreen({
   style = {},
 }) {
   const glowContainerRef = useRef(null);
-  const [{ time, date }, setDateTime] = useState(() => getDateTime());
+  // Use empty initial state to avoid hydration mismatch (server/client time difference)
+  const [{ time, date }, setDateTime] = useState({ time: "--:--", date: "" });
 
   // 注入全局样式
   useEffect(() => {
     injectStylesOnce();
   }, []);
 
-  // 更新时间
+  // 更新时间 - initialize and update only on client side
   useEffect(() => {
-    const id = window.setInterval(() => {
+    if (!isBrowser) return;
+    // Initialize time immediately on mount
+    setDateTime(getDateTime());
+    const id = setInterval(() => {
       setDateTime(getDateTime());
     }, 1000);
-    return () => window.clearInterval(id);
+    return () => clearInterval(id);
   }, []);
 
   // 初始化 Glow 效果

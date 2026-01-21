@@ -1,5 +1,8 @@
 import React, { useEffect, useRef } from "react";
 
+// ---- SSR safety check ----
+const isBrowser = typeof window !== "undefined" && typeof document !== "undefined";
+
 // ---- Core glow logic (only负责边缘光效，不包含具体 UI) ----
 
 const COLORS = ["#BC82F3", "#F5B9EA", "#8D9FFF", "#FF6778", "#FFBA71", "#C686FF"];
@@ -16,6 +19,9 @@ function generateConicGradientString() {
 
 class GlowRing {
   constructor(container, config) {
+    // SSR safety: only run in browser environment
+    if (!isBrowser) return;
+
     this.width = config.width;
     this.blur = config.blur;
     this.interval = config.interval * 1000;
@@ -49,6 +55,7 @@ class GlowRing {
   }
 
   createBuffer() {
+    if (!isBrowser) return null;
     const div = document.createElement("div");
     div.className = "aie-gradient-buffer";
     div.style.padding = `${this.width}px`;
@@ -58,16 +65,20 @@ class GlowRing {
   }
 
   setGradient(element, gradientString) {
-    element.style.backgroundImage = gradientString;
+    if (element) {
+      element.style.backgroundImage = gradientString;
+    }
   }
 
   startTimer() {
-    this.timerId = window.setInterval(() => {
+    if (!isBrowser) return;
+    this.timerId = setInterval(() => {
       this.animate();
     }, this.interval);
   }
 
   animate() {
+    if (!isBrowser) return;
     const newGradient = generateConicGradientString();
 
     if (this.activeBuffer === 1) {
@@ -85,7 +96,7 @@ class GlowRing {
 
   destroy() {
     if (this.timerId) {
-      window.clearInterval(this.timerId);
+      clearInterval(this.timerId);
       this.timerId = null;
     }
   }
@@ -172,11 +183,13 @@ function injectStylesOnce() {
  * 只负责 Apple Intelligence 风格的 glow 边框，你可以在里面放任意内容。
  *
  * props:
+ * - isActive: 是否激活发光效果（默认 true）。设为 false 时只渲染 children，用于性能优化
  * - radius: 数字或字符串，控制圆角半径（默认 50px）
  * - className, style: 挂在最外层 glow 容器上
  * - children: 你的内容（锁屏、卡片、面板都行）
  */
 export function AppleIntelligenceGlow({
+  isActive = true,
   radius = 50,
   className = "",
   style = {},
@@ -184,13 +197,17 @@ export function AppleIntelligenceGlow({
 }) {
   const glowContainerRef = useRef(null);
 
-  // 注入全局样式
+  // 注入全局样式（仅在激活时）
   useEffect(() => {
-    injectStylesOnce();
-  }, []);
+    if (isActive) {
+      injectStylesOnce();
+    }
+  }, [isActive]);
 
-  // 初始化 Glow 效果
+  // 初始化 Glow 效果（仅在激活时）
   useEffect(() => {
+    if (!isActive) return;
+
     const container = glowContainerRef.current;
     if (!container) return;
 
@@ -205,7 +222,16 @@ export function AppleIntelligenceGlow({
       rings.forEach((r) => r.destroy());
       container.innerHTML = "";
     };
-  }, []);
+  }, [isActive]);
+
+  // 未激活时，只渲染 children（保持相同的 DOM 结构以避免重新挂载）
+  if (!isActive) {
+    return (
+      <div className={className} style={style}>
+        {children}
+      </div>
+    );
+  }
 
   const mergedStyle = {
     "--aie-radius": typeof radius === "number" ? `${radius}px` : radius,
