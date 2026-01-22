@@ -26,7 +26,7 @@ interface DateTime {
 }
 
 // ---- 样式注入 ----
-const STYLE_ID = "apple-intelligence-lock-screen-styles";
+const STYLE_ID = "apple-intelligence-glow-react-styles";
 
 const CSS = `
 .aie-lock-screen {

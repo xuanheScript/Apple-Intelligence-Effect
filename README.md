@@ -1,17 +1,31 @@
-## apple-intelligence-glow-react
+# apple-intelligence-glow-react
 
 Apple Intelligence–inspired animated glow border as a reusable React component.
 
+[![npm version](https://img.shields.io/npm/v/apple-intelligence-glow-react.svg)](https://www.npmjs.com/package/apple-intelligence-glow-react)
+[![license](https://img.shields.io/npm/l/apple-intelligence-glow-react.svg)](https://github.com/xuanheScript/Apple-Intelligence-Effect/blob/main/LICENSE)
+
+**[Live Demo](https://xuanhescript.github.io/Apple-Intelligence-Effect/)**
+
 ![Glow Demo](./glow_demo.png)
 
-This package exposes:
+## Features
 
-- **`AppleIntelligenceGlow`** – the core, reusable glow container. It only renders the animated border and lets you provide any content inside.
-- **`AppleIntelligenceLockScreen`** – example lock screen UI built on top of the same glow logic, intended as a demo/showcase.
+- Multiple glow states: `idle`, `hover`, `focus`, `thinking`, `success`, `error`
+- Smooth state transitions with CSS animations
+- SSR compatible (Next.js, Remix, etc.)
+- Respects `prefers-reduced-motion`
+- TypeScript support
+- Zero dependencies (only React peer dependency)
+
+## Components
+
+- **`AppleIntelligenceGlow`** – Core reusable glow container with state support
+- **`AppleIntelligenceLockScreen`** – Demo lock screen UI with dynamic island and live clock
 
 ---
 
-### Installation
+## Installation
 
 ```bash
 npm install apple-intelligence-glow-react
@@ -27,211 +41,174 @@ pnpm add apple-intelligence-glow-react
 
 ---
 
-### Quick Start (Glow Only)
-
-The core idea is: **wrap your own UI with `AppleIntelligenceGlow`** and let the component handle the animated border.
+## Quick Start
 
 ```jsx
-import React from "react";
 import { AppleIntelligenceGlow } from "apple-intelligence-glow-react";
 
-export default function Demo() {
+function App() {
   return (
-    <div
+    <AppleIntelligenceGlow
+      state="thinking"
+      radius={24}
       style={{
-        minHeight: "100vh",
-        background: "#fff",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
+        width: 300,
+        height: 200,
+        background: "#1a1a2e",
+        padding: 20,
       }}
     >
-      <AppleIntelligenceGlow
-        radius={50}
-        style={{
-          width: 360,
-          height: 720,
-          background: "#000",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "#fff",
-          padding: 40,
-        }}
-      >
-        {/* Your own UI goes here: lock screen, card, panel, etc. */}
-        <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: "3rem", fontWeight: 600, marginBottom: 8 }}>
-            My Custom
-          </div>
-          <div style={{ fontSize: "1.2rem", opacity: 0.8 }}>
-            Lock Screen or Card
-          </div>
-        </div>
-      </AppleIntelligenceGlow>
-    </div>
+      <div style={{ color: "#fff" }}>
+        AI is thinking...
+      </div>
+    </AppleIntelligenceGlow>
   );
 }
 ```
 
-The component:
-
-- Injects the required CSS once at runtime.
-- Uses multiple blurred conic gradients to create the Apple Intelligence–style animated border.
-- Keeps your content fully under your control.
-
 ---
 
-### Example Lock Screen Component
+## State Control
 
-If you want a ready‑made demo that looks like an Apple‑style lock screen, you can also import `AppleIntelligenceLockScreen`:
+The component supports 6 different visual states:
 
 ```jsx
-import React from "react";
-import {
-  AppleIntelligenceGlow,
-  AppleIntelligenceLockScreen,
-} from "apple-intelligence-glow-react";
+import { useState } from "react";
+import { AppleIntelligenceGlow, GlowState } from "apple-intelligence-glow-react";
 
-export default function Demo() {
+function AIInput() {
+  const [state, setState] = useState<GlowState>("idle");
+
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#fff",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        gap: 48,
-        padding: 40,
-      }}
+    <AppleIntelligenceGlow
+      state={state}
+      radius={16}
+      onMouseEnter={() => setState("hover")}
+      onMouseLeave={() => setState("idle")}
+      onFocus={() => setState("focus")}
     >
-      {/* 1. Glow + custom content */}
-      <AppleIntelligenceGlow
-        radius={50}
-        style={{
-          width: 360,
-          height: 720,
-          background: "#000",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "#fff",
-        }}
-      >
-        <div>My custom lock screen or card</div>
-      </AppleIntelligenceGlow>
-
-      {/* 2. Full lock screen demo */}
-      <AppleIntelligenceLockScreen width={360} height={720} showHelperText />
-    </div>
+      <textarea placeholder="Ask AI..." />
+    </AppleIntelligenceGlow>
   );
 }
 ```
 
-`AppleIntelligenceLockScreen` is built using the same glow logic and is mainly intended for demos, docs, and inspiration.
+| State | Description | Visual Effect |
+|-------|-------------|---------------|
+| `idle` | Default state | Very subtle glow (15% intensity) |
+| `hover` | Mouse hover | Light highlight (35% intensity) |
+| `focus` | Input focused | Clear focus ring (55% intensity) |
+| `thinking` | AI processing | Animated gradient (75% intensity, faster rotation) |
+| `success` | Task complete | Bloom effect (100% intensity) |
+| `error` | Error state | Solid red glow (no rotation) |
 
 ---
 
-### API Reference
+## API Reference
 
-#### `AppleIntelligenceGlow`
+### `AppleIntelligenceGlow`
 
-Core container that renders the animated glow border around its children.
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `state` | `GlowState` | `"thinking"` | Visual state of the glow |
+| `isActive` | `boolean` | `true` | Enable/disable glow effect |
+| `isPaused` | `boolean` | `false` | Pause animation (keeps current state) |
+| `radius` | `number \| string` | `50` | Border radius |
+| `className` | `string` | - | Custom CSS class |
+| `style` | `CSSProperties` | - | Inline styles |
+| `children` | `ReactNode` | - | Content to wrap |
 
-**Props**
+### `AppleIntelligenceLockScreen`
 
-- **`radius?: number | string`**  
-  Corner radius of the glow and clipping mask.  
-  - Default: `50` (pixels)  
-  - You can also pass CSS values like `"3rem"` or `"32px"`.
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `width` | `number \| string` | `360` | Phone frame width |
+| `height` | `number \| string` | `720` | Phone frame height |
+| `isActive` | `boolean` | `true` | Enable/disable glow |
+| `isPaused` | `boolean` | `false` | Pause animation |
+| `className` | `string` | - | Custom CSS class |
+| `style` | `CSSProperties` | - | Inline styles |
 
-- **`className?: string`**  
-  Custom class name applied to the outer glow container.
+### `GlowState` Type
 
-- **`style?: React.CSSProperties`**  
-  Inline style applied to the outer glow container.  
-  Commonly used to define:
-  - Width / height
-  - Background color
-  - Layout (flexbox, padding, etc.)
-
-- **`children: React.ReactNode`**  
-  Any React content you want to render inside the glow.
-
----
-
-#### `AppleIntelligenceLockScreen`
-
-Example lock screen UI that uses the same glow effect, with:
-
-- Dynamic Island‑style notch
-- Live digital clock
-- Date label
-- Bottom home indicator bar
-
-**Props**
-
-- **`width?: number | string`**  
-  Width of the phone frame. Default: `360` (pixels).
-
-- **`height?: number | string`**  
-  Height of the phone frame. Default: `720` (pixels).
-
-- **`showHelperText?: boolean`**  
-  Whether to show the helper caption under the phone. Default: `true`.
-
-- **`className?: string`**  
-  Custom class name applied to the outermost container.
-
-- **`style?: React.CSSProperties`**  
-  Inline style merged onto the outermost container (in addition to internal CSS variables for width/height).
-
----
-
-### Publishing / Local Development
-
-This repository is already configured to be published as an npm package:
-
-- `main` and `module` both point to `src/index.js`.
-- Only `src` and `README.md` are included in the published tarball via the `"files"` field.
-
-If you want to publish under your own npm account:
-
-1. **Login to npm**
-
-   ```bash
-   npm login
-   ```
-
-2. **Adjust the package name (optional)**
-
-   Update the `"name"` field in `package.json` if you want a different public name.
-
-3. **Bump the version**
-
-   ```bash
-   npm version patch   # or minor / major
-   ```
-
-4. **Publish**
-
-   ```bash
-   npm publish --access public
-   ```
-
-Once published, consumers can install it with:
-
-```bash
-npm install apple-intelligence-glow-react
+```typescript
+type GlowState = "idle" | "hover" | "focus" | "thinking" | "success" | "error";
 ```
 
-and use it as shown in the examples above.
+---
+
+## Custom Colors
+
+Override the default gradient colors using CSS variables:
+
+```jsx
+<AppleIntelligenceGlow
+  style={{
+    "--aie-color-1": "#00FF00",
+    "--aie-color-2": "#00CC00",
+    "--aie-color-3": "#009900",
+    "--aie-color-4": "#006600",
+    "--aie-color-5": "#003300",
+    "--aie-color-6": "#00FF00",
+  }}
+>
+  {/* Green theme */}
+</AppleIntelligenceGlow>
+```
 
 ---
 
-### License
+## Examples
+
+### AI Chat Input
+
+```jsx
+function AIChatInput() {
+  const [state, setState] = useState("idle");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async () => {
+    setState("thinking");
+    setIsLoading(true);
+
+    try {
+      await sendMessage();
+      setState("success");
+    } catch {
+      setState("error");
+    } finally {
+      setIsLoading(false);
+      setTimeout(() => setState("idle"), 2000);
+    }
+  };
+
+  return (
+    <AppleIntelligenceGlow state={state} radius={12}>
+      <input
+        onFocus={() => !isLoading && setState("focus")}
+        onBlur={() => !isLoading && setState("idle")}
+      />
+      <button onClick={handleSubmit}>Send</button>
+    </AppleIntelligenceGlow>
+  );
+}
+```
+
+### Card with Hover Effect
+
+```jsx
+<AppleIntelligenceGlow
+  state={isHovered ? "hover" : "idle"}
+  radius={20}
+  className="card"
+>
+  <h2>Premium Feature</h2>
+  <p>Unlock AI capabilities</p>
+</AppleIntelligenceGlow>
+```
+
+---
+
+## License
 
 MIT
-

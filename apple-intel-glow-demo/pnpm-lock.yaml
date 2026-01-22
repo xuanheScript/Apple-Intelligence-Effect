@@ -8,9 +8,9 @@ importers:
 
   .:
     dependencies:
-      apple-intelligence-lock-screen:
+      apple-intelligence-glow-react:
         specifier: file:..
-        version: apple-intelligence-glow-react@file:..(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        version: file:..(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react:
         specifier: ^19.2.0
         version: 19.2.3

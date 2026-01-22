@@ -40,9 +40,21 @@ body {
 
 .demo-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 40px;
   width: 100%;
+}
+
+@media (max-width: 1100px) {
+  .demo-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 750px) {
+  .demo-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .demo-section {
@@ -96,6 +108,36 @@ body {
   background: rgba(251, 191, 36, 0.2);
   border-color: rgba(251, 191, 36, 0.5);
   color: #fbbf24;
+}
+
+/* State selector */
+.state-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.state-btn {
+  padding: 6px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.state-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.state-btn.selected {
+  background: linear-gradient(135deg, rgba(188, 130, 243, 0.3), rgba(141, 159, 255, 0.3));
+  border-color: rgba(188, 130, 243, 0.6);
+  color: #fff;
 }
 
 /* Demo card */
@@ -212,6 +254,150 @@ body {
   font-size: 1.8rem;
 }
 
+/* States preview grid */
+.demo-section-wide {
+  grid-column: 1 / -1;
+}
+
+.states-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+  width: 100%;
+  max-width: 800px;
+}
+
+@media (max-width: 900px) {
+  .states-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 500px) {
+  .states-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.state-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.state-preview-card {
+  width: 100px;
+  height: 80px;
+  background: linear-gradient(135deg, #2a2a3e 0%, #1a1a28 100%);
+}
+
+.state-preview-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: #fff;
+}
+
+.state-preview-icon {
+  font-size: 1.5rem;
+}
+
+.state-preview-label {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  text-transform: capitalize;
+}
+
+/* Streaming Demo */
+.start-btn:not(:disabled) {
+  background: linear-gradient(135deg, rgba(188, 130, 243, 0.3), rgba(141, 159, 255, 0.3));
+  border-color: rgba(188, 130, 243, 0.5);
+  color: #fff;
+}
+
+.start-btn:not(:disabled):hover {
+  background: linear-gradient(135deg, rgba(188, 130, 243, 0.4), rgba(141, 159, 255, 0.4));
+  border-color: rgba(188, 130, 243, 0.7);
+}
+
+.streaming-state-indicator {
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.streaming-state-indicator strong {
+  color: #fff;
+}
+
+.streaming-textarea-wrapper {
+  width: 280px;
+  height: 400px;
+  background: linear-gradient(180deg, #1f1f2e 0%, #151520 100%);
+  position: relative;
+}
+
+/* 确保内部容器填满整个高度 */
+.streaming-textarea-wrapper .aie-glow-content {
+  height: 100%;
+}
+
+.streaming-textarea {
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  font-family: inherit;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
+  box-sizing: border-box;
+}
+
+.streaming-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+  font-style: italic;
+}
+
+.streaming-cursor {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  animation: blink 1s step-end infinite;
+  color: #BC82F3;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}
+
+.streaming-hint {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
+}
+
 /* Footer */
 .demo-footer {
   margin-top: 20px;
@@ -235,9 +421,5 @@ body {
 
   .demo-title {
     font-size: 1.8rem;
-  }
-
-  .demo-grid {
-    grid-template-columns: 1fr;
   }
 }
