@@ -16,15 +16,12 @@ export default defineConfig({
     __GITHUB_REPO__: JSON.stringify(githubRepo),
   },
   resolve: {
-    alias: isCI
-      ? {
-          // CI 环境使用构建后的包，避免 React 多实例问题
-          'apple-intelligence-glow-react': path.resolve(__dirname, '../dist/index.mjs'),
-        }
-      : {
-          // 开发时直接使用源文件，无需每次 build
-          'apple-intelligence-glow-react': path.resolve(__dirname, '../src/index.ts'),
-        },
+    alias: {
+      // 始终使用源文件，让 Vite 统一处理打包
+      'apple-intelligence-glow-react': path.resolve(__dirname, '../src/index.ts'),
+    },
+    // 确保 React 只有一个实例
+    dedupe: ['react', 'react-dom'],
   },
   // 确保 React 只有一个实例
   optimizeDeps: {
