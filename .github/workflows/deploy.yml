@@ -38,7 +38,7 @@ jobs:
 
       - name: Install demo dependencies
         working-directory: ./apple-intel-glow-demo
-        run: npm ci
+        run: npm install
 
       - name: Build demo
         working-directory: ./apple-intel-glow-demo
