@@ -1,9 +1,9 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ["src/index.js"],
+  entry: ["src/index.ts"],
   format: ["cjs", "esm"],
-  dts: false,
+  dts: true,
   splitting: false,
   sourcemap: true,
   clean: true,
@@ -11,5 +11,4 @@ export default defineConfig({
   esbuildOptions(options) {
     options.jsx = "automatic";
   },
-  onSuccess: "cp src/index.d.ts dist/index.d.ts",
 });

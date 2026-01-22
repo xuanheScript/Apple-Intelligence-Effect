@@ -21,3 +21,4 @@ npm-debug.log*
 # Lock files (optional - remove if you want to commit them)
 # package-lock.json
 # pnpm-lock.yaml
+.claude/
